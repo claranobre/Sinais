@@ -106,6 +106,29 @@ int Acao(void){
 	return acao;
 }
 
+int mostrarCores(int estado1, int estado2){
+	if (estado1 == DESLIGADO){
+		printf("DESLIGADO\n");
+	}
+	else{
+		printf("LIGADO ");
+		switch (estado2){
+			case VERMELHO:
+				printf("VERMELHO\n");
+				break;
+			case AMARELO_VERDE:
+				printf("AMARELO_VERDE\n");
+				break;
+			case VERDE:
+				printf("VERDE\n");
+				break;
+			case AMARELO_VERMELHO:
+				printf("AMARELO_VERMELHO\n");
+				break;
+		}
+	}
+}
+
 int main(int argc, char *argv[]){
 
 	//Identificador do processo
