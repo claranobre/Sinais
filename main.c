@@ -1,11 +1,6 @@
-#include <csignal>
-#include <cstdio>
-#include <unistd.h>
-#include <stdlib>
-
-//Constantes lógicas
-#define FALSE 0
-#define TRUE 1
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 //Estados do Semáforo
 #define LIGADO
@@ -13,9 +8,8 @@
 
 //Sub Estados do Semáforo
 #define VERMELHO
-#define AMARELO_VERDE
+#define AMARELO
 #define VERDE
-#define AMARELO_VERMELHO
 
 // Eventos de Semáforo
 #define A
@@ -46,19 +40,20 @@ void funcaoSignalHandler(int *sig1, int *sig2, int evento){
 			if (sig1 == LIGADO){
 				switch (*sig2){
                		case VERMELHO:
-                  		*sig2 = AMARELO_VERDE;
-                  	break;
-              		case AMARELO_VERDE:
                   		*sig2 = VERDE;
+                  		sleep(3);
+                  	break;
+              		case AMARELO:
+                  		*sig2 = VERMELHO;
+                  		sleep(2);
                   	break;
               		case VERDE:
-                  		*sig2 = AMARELO_VERMELHO;
-                  	break;
-              		case AMARELO_VERMELHO:
-                  		*sig2 = VERMELHO;
+                  		*sig2 = AMARELO;
+                  		sleep(4);
                  	break;
               	}
-          break;
+          	default:
+          		break;
     	}
     	case C:
     		if(*sig1 == DESLIGADO){
@@ -68,42 +63,29 @@ void funcaoSignalHandler(int *sig1, int *sig2, int evento){
     		break;			
 	}
 }
-int Acao(void){
+Acao(void){
 	int invalido = FALSE;
-	int acao, op;
 
 	do{
 		if(invalido){
 			printf("Sinal Inválido.");
 		}
 		else{
-			printf(" 1 - Ligar o Semáforo \n");
-			printf(" 2 - Desligar o Semáforo \n"); //Ctrl + Z
-			printf(" 3 - Chavear o Semáforo \n"); // Ctrl + C
-			printf(" 4 - FIM \n Opção:");
+			printf(" 1 - Chavear o Semáforo (Ctrl + C) \n"); // Ctrl + C
+			printf(" 2 - FIM (Ctrl + Z) \n Opção:"); //Ctrl + Z
 		}
 		invalido = FALSE;
-		scanf("%d", &op);
-		
-		switch(op){
-			case 1:
-				acao = LIGAR;
-			break;
-			case 2:	
-				acao = DESLIGAR;
-			break;
-			case 3:
-				acao = CHAVEAR;
-			case 4: 
-				acao = TERMINAR; //Ctrl + Z
-			break;
-		default:
-				invalido = TRUE;
-			break;		
+
+			if(signal(SIGCHLD, funcaoSignalHandler())){
+			}
+			else if(signal(SIGTSTP)){
+				printf("Bye!");
+			}
+
+		invalido = TRUE;		
 		}
 	}
 	while(invalido)
-	return acao;
 }
 
 int mostrarCores(int estado1, int estado2){
@@ -111,20 +93,17 @@ int mostrarCores(int estado1, int estado2){
 		printf("DESLIGADO\n");
 	}
 	else{
-		printf("LIGADO ");
+		printf("LIGADO\n");
 		switch (estado2){
 			case VERMELHO:
 				printf("VERMELHO\n");
 				break;
-			case AMARELO_VERDE:
-				printf("AMARELO_VERDE\n");
+			case AMARELO:
+				printf("AMARELO\n");
 				break;
 			case VERDE:
 				printf("VERDE\n");
-				break;
-			case AMARELO_VERMELHO:
-				printf("AMARELO_VERMELHO\n");
-				break;
+				break;	
 		}
 	}
 }
@@ -149,5 +128,4 @@ int main(int argc, char *argv[]){
 				sleep(1);
 			}	
 	}
-
 }
